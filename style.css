@@ -218,10 +218,10 @@ button {
         auto;
 
     height:
-        105px;
+        clamp(170px, 30vw, 330px);
 
     max-width:
-        45vw;
+        78vw;
 
     object-fit:
         contain;
@@ -527,6 +527,19 @@ button {
 
     flex-shrink:
         0;
+
+    font-family:
+        'Syncopate',
+        sans-serif;
+
+    font-size:
+        .95rem;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        -.08em;
 
 }
 
@@ -3568,4 +3581,439 @@ dialog button {
 
     }
 
+}
+
+/* =========================================================
+   NARROW MOBILE LAYOUT
+========================================================= */
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    #scroll-content {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        transform: none !important;
+    }
+
+    .brutal-nav,
+    .brutal-nav.scrolled {
+        left: 4vw;
+        right: 4vw;
+        width: auto;
+        max-width: none;
+        min-height: 52px;
+        padding: .65rem .85rem;
+        gap: .75rem;
+        border-radius: 18px;
+    }
+
+    .nav-logo {
+        flex: 0 0 auto;
+    }
+
+    .nav-logo img {
+        width: auto;
+        max-width: 120px;
+        height: 25px;
+    }
+
+    .mobile-menu-button {
+        min-width: 76px;
+        min-height: 42px;
+        padding: .65rem .8rem;
+        border-radius: 999px;
+        font-size: .62rem;
+    }
+
+    .mobile-menu {
+        left: 4vw;
+        right: 4vw;
+        width: auto;
+        max-height: calc(100svh - 90px);
+        overflow-y: auto;
+        border-radius: 20px;
+        padding: .7rem;
+    }
+
+    .mobile-menu a {
+        min-height: 52px;
+        padding: 1rem .65rem;
+        font-size: .9rem;
+    }
+
+    .hero {
+        min-height: 0;
+        height: auto;
+        padding: 8rem 6vw 6rem;
+    }
+
+    .hero-top {
+        position: static;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: .58rem;
+    }
+
+    .hero-title-container {
+        min-height: 0;
+        margin: 7rem 0 6rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero h1 {
+        width: 100%;
+        margin: 0;
+        font-size: clamp(3.2rem, 16vw, 6.2rem);
+        line-height: .86;
+        letter-spacing: -.09em;
+        overflow-wrap: anywhere;
+    }
+
+    .hero h1 .word {
+        white-space: nowrap;
+    }
+
+    .hero-bottom {
+        position: static;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.4rem;
+    }
+
+    .hero-bottom > p {
+        width: 100%;
+        max-width: 34rem;
+        font-size: .82rem;
+        line-height: 1.55;
+    }
+
+    .hero-info {
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: .9rem;
+    }
+
+    .hero-info > div {
+        min-width: 0;
+        padding: .85rem;
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        background: rgba(255,255,255,.04);
+    }
+
+    .hero-info small,
+    .hero-info strong {
+        display: block;
+        font-size: .58rem;
+        line-height: 1.35;
+        white-space: normal;
+    }
+
+    .hero-info strong {
+        margin-top: .45rem;
+        overflow-wrap: anywhere;
+    }
+
+    .hero-info .email-link {
+        grid-column: 1 / -1;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .8rem 1rem;
+        border-radius: 999px;
+    }
+
+    .tape-wrapper {
+        position: relative;
+        left: -6vw;
+        width: 112vw;
+        margin-top: 4rem;
+        bottom: auto;
+        transform: rotate(-2deg);
+    }
+
+    .tape-text {
+        font-size: .88rem;
+    }
+
+    .section-dark,
+    .content-section {
+        width: 100%;
+        min-height: 0;
+        padding: 5rem 6vw;
+    }
+
+    .section-number {
+        font-size: .58rem;
+        line-height: 1.4;
+    }
+
+    .section-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 2.2rem;
+    }
+
+    .section-header h2,
+    .testimonial-section h2,
+    .contact-section h2 {
+        max-width: 100%;
+        font-size: clamp(2rem, 10vw, 3.5rem);
+        line-height: .98;
+        overflow-wrap: anywhere;
+    }
+
+    .section-header p,
+    .section-copy,
+    .contact-section p {
+        width: 100%;
+        max-width: 34rem;
+        font-size: .8rem;
+        line-height: 1.55;
+    }
+
+    .big-text {
+        font-size: clamp(2.2rem, 11vw, 4rem);
+        line-height: .98;
+        overflow-wrap: anywhere;
+    }
+
+    .stats-grid,
+    .studio-grid,
+    .work-grid,
+    .browser-grid,
+    .poster-grid,
+    .stack-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+    .stat {
+        min-height: 150px;
+        padding: 1.25rem;
+        border-radius: 18px;
+    }
+
+    .stat b {
+        font-size: clamp(3rem, 16vw, 5rem);
+    }
+
+    .studio-grid {
+        grid-template-rows: repeat(4, minmax(180px, 52vw));
+    }
+
+    .studio-grid img,
+    .studio-grid img:first-child,
+    .studio-grid img:last-child {
+        grid-column: 1;
+        grid-row: auto;
+        min-height: 0;
+        height: 100%;
+    }
+
+    .service {
+        grid-template-columns: 30px minmax(0, 1fr) 28px;
+        align-items: start;
+        gap: .7rem;
+        padding: 1rem .75rem;
+        border-radius: 16px;
+    }
+
+    .service h3 {
+        min-width: 0;
+        font-size: clamp(.95rem, 4.5vw, 1.2rem);
+        overflow-wrap: anywhere;
+    }
+
+    .service p {
+        grid-column: 2 / 3;
+        margin-top: .35rem;
+        font-size: .7rem;
+        line-height: 1.45;
+    }
+
+    .service b {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+    }
+
+    .work,
+    .browser,
+    .poster-grid img {
+        min-width: 0;
+        border-radius: 18px;
+    }
+
+    .work img,
+    .work-large img {
+        height: auto;
+        aspect-ratio: 1.25;
+    }
+
+    .browser-offset,
+    .browser.tilt {
+        transform: none;
+    }
+
+    .poster-grid {
+        grid-auto-rows: auto;
+    }
+
+    .poster-grid img,
+    .poster-grid img:nth-child(2),
+    .poster-grid img:nth-child(4) {
+        grid-column: 1;
+        grid-row: auto;
+        aspect-ratio: 1 / 1.15;
+    }
+
+    .quote-stage {
+        grid-template-columns: 38px minmax(0, 1fr) 38px;
+        gap: .45rem;
+        margin-top: 2.5rem;
+        padding: 1rem .35rem;
+        border-radius: 18px;
+    }
+
+    .quote-stage button {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+
+    .quote-mark {
+        font-size: 3.5rem;
+    }
+
+    .quote-stage blockquote {
+        margin: 1rem 0;
+        font-size: clamp(1.05rem, 5vw, 1.4rem);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .quote-stage strong,
+    .quote-stage small {
+        font-size: .7rem;
+        overflow-wrap: anywhere;
+    }
+
+    .client-list {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 18px;
+    }
+
+    .client {
+        grid-template-columns: 30px minmax(0, 1fr) 26px;
+        min-height: 58px;
+        gap: .6rem;
+        padding: .85rem .7rem;
+    }
+
+    .client h3 {
+        min-width: 0;
+        font-size: clamp(.85rem, 4vw, 1.1rem);
+        overflow-wrap: anywhere;
+    }
+
+    .client small {
+        display: none;
+    }
+
+    .all-projects,
+    .contact-btn {
+        width: 100%;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .9rem 1rem;
+        border-radius: 999px;
+        text-align: center;
+    }
+
+    .stack-marquee {
+        width: 112%;
+        margin-left: -6%;
+    }
+
+    .stack-grid a {
+        min-height: 58px;
+        padding: .9rem;
+        font-size: .72rem;
+        border-radius: 16px;
+    }
+
+    .contact-section {
+        min-height: 0;
+        padding-bottom: 6rem;
+    }
+
+    .contact-section h2 {
+        font-size: clamp(2rem, 10vw, 3.4rem);
+    }
+
+    .site-footer {
+        width: calc(100% - 28px);
+        min-height: 0;
+        margin: 1rem auto;
+        padding: 3rem 1.25rem 1.5rem;
+        border-radius: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .footer-logo img {
+        width: auto;
+        height: 36px;
+    }
+
+    .footer-links {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .7rem;
+    }
+
+    .footer-links a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .7rem .4rem;
+        border-radius: 999px;
+        font-size: .58rem;
+    }
+
+    .site-footer p {
+        margin: 0;
+        font-size: .58rem;
+    }
+
+    #back-to-top {
+        right: 14px;
+        bottom: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+    }
 }

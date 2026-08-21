@@ -681,7 +681,8 @@ function scrollLoop() {
 
     if (
         content &&
-        !reduceMotion
+        !reduceMotion &&
+        !window.matchMedia('(max-width: 700px)').matches
     ) {
 
         const scrollTop =
@@ -763,6 +764,7 @@ function heroVelocityLoop() {
 
     if (
         !reduceMotion &&
+        !window.matchMedia('(max-width: 700px)').matches &&
         words.length
     ) {
 
