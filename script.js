@@ -1,30 +1,112 @@
-const timeElement = document.querySelector('#local-time');
-function updateLocalTime() { timeElement.textContent = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()); }
-updateLocalTime(); setInterval(updateLocalTime, 1000);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const nav = document.querySelector('#site-nav');
+const cursor = document.querySelector('.cursor');
 
-const menuToggle = document.querySelector('.menu-toggle');
-const navLinks = document.querySelector('.nav-links');
-menuToggle.addEventListener('click', () => { const isOpen = navLinks.classList.toggle('open'); menuToggle.setAttribute('aria-expanded', isOpen); });
-navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { navLinks.classList.remove('open'); menuToggle.setAttribute('aria-expanded', 'false'); }));
+function startBootLoader() {
+	const loader = document.querySelector('#boot-loader');
+	const percent = document.querySelector('#boot-percent');
+	const progress = document.querySelector('#boot-progress');
+	const status = document.querySelector('#boot-status');
+	const duration = reduceMotion ? 350 : 1800;
+	const started = performance.now();
+	let finished = false;
+	const finish = () => {
+		if (finished) return;
+		finished = true;
+		percent.textContent = '100%';
+		progress.style.width = '100%';
+		status.textContent = 'READY';
+		loader.classList.add('is-done');
+		document.body.classList.remove('booting');
+	};
+	const tick = (time) => {
+		const value = Math.min((time - started) / duration, 1);
+		const number = Math.round(value * 100);
+		percent.textContent = `${String(number).padStart(3, '0')}%`;
+		progress.style.width = `${number}%`;
+		if (value < 1) requestAnimationFrame(tick);
+		else finish();
+	};
+	requestAnimationFrame(tick);
+	window.setTimeout(finish, duration + 700);
+}
+startBootLoader();
 
-const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); } }), { threshold: .12 });
-document.querySelectorAll('.reveal').forEach(element => revealObserver.observe(element));
+function updateClock() {
+	const now = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+	document.querySelector('#clock').textContent = now;
+}
+updateClock();
+setInterval(updateClock, 1000);
 
-const counters = document.querySelectorAll('[data-count]');
-const counterObserver = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { const target = entry.target; const end = Number(target.dataset.count); let value = 0; const step = () => { value += Math.max(1, Math.ceil(end / 35)); target.textContent = `${Math.min(value, end)}+`; if (value < end) requestAnimationFrame(step); }; step(); counterObserver.unobserve(target); } }), { threshold: .8 });
-counters.forEach(counter => counterObserver.observe(counter));
+const revealObserver = new IntersectionObserver((entries) => {
+	entries.forEach((entry) => {
+		if (entry.isIntersecting) {
+			entry.target.classList.add('visible');
+			revealObserver.unobserve(entry.target);
+		}
+	});
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
 
-const slides = [...document.querySelectorAll('.testimonial')]; let currentSlide = 0;
-function showSlide(index) { currentSlide = (index + slides.length) % slides.length; slides.forEach((slide, i) => slide.classList.toggle('active', i === currentSlide)); document.querySelector('#slide-number').textContent = `0${currentSlide + 1} / 0${slides.length}`; }
-document.querySelector('#prev-testimonial').addEventListener('click', () => showSlide(currentSlide - 1));
-document.querySelector('#next-testimonial').addEventListener('click', () => showSlide(currentSlide + 1));
+document.querySelectorAll('.hero-title .word').forEach((word) => {
+	const text = word.dataset.word;
+	word.textContent = '';
+	[...text].forEach((character, index) => {
+		const span = document.createElement('span');
+		span.textContent = character;
+		span.style.display = 'inline-block';
+		span.style.opacity = reduceMotion ? '1' : '0';
+		span.style.transform = reduceMotion ? 'none' : 'translateY(80px)';
+		span.style.filter = reduceMotion ? 'none' : 'blur(10px)';
+		span.style.transition = `opacity .7s ${index * .06}s, transform .7s ${index * .06}s, filter .7s ${index * .06}s, color .25s`;
+		word.append(span);
+		requestAnimationFrame(() => { span.style.opacity = '1'; span.style.transform = 'none'; span.style.filter = 'none'; });
+	});
+});
 
-const lightbox = document.querySelector('.lightbox'); const lightboxImage = lightbox.querySelector('img');
-document.querySelectorAll('[data-image]').forEach(item => item.addEventListener('click', () => { lightboxImage.src = item.dataset.image; lightboxImage.alt = item.querySelector('img').alt; lightbox.classList.add('open'); document.body.style.overflow = 'hidden'; }));
-function closeLightbox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; lightboxImage.src = ''; }
-lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox); lightbox.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); }); document.addEventListener('keydown', event => { if (event.key === 'Escape') closeLightbox(); });
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 80), { passive: true });
 
-const cursorDot = document.querySelector('.cursor-dot'); const cursorRing = document.querySelector('.cursor-ring');
-if (window.matchMedia('(pointer: fine)').matches) { document.addEventListener('pointermove', event => { cursorDot.style.opacity = '1'; cursorRing.style.opacity = '1'; cursorDot.style.left = `${event.clientX - 2}px`; cursorDot.style.top = `${event.clientY - 2}px`; cursorRing.style.left = `${event.clientX - 16}px`; cursorRing.style.top = `${event.clientY - 16}px`; }); document.querySelectorAll('a,button').forEach(item => { item.addEventListener('mouseenter', () => cursorRing.classList.add('hover')); item.addEventListener('mouseleave', () => cursorRing.classList.remove('hover')); }); }
+if (!reduceMotion && cursor) {
+	let cursorX = innerWidth / 2; let cursorY = innerHeight / 2; let targetX = cursorX; let targetY = cursorY;
+	window.addEventListener('pointermove', (event) => { targetX = event.clientX; targetY = event.clientY; });
+	const moveCursor = () => { cursorX += (targetX - cursorX) * .2; cursorY += (targetY - cursorY) * .2; cursor.style.left = `${cursorX}px`; cursor.style.top = `${cursorY}px`; requestAnimationFrame(moveCursor); };
+	moveCursor();
+	document.querySelectorAll('a, button, .work img, .studio-grid img, .poster-grid img').forEach((element) => {
+		element.addEventListener('mouseenter', () => cursor.classList.add('active'));
+		element.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+	});
+}
 
-const heroArt = document.querySelector('.hero-art'); document.addEventListener('pointermove', event => { if (window.innerWidth > 800) { const x = (event.clientX / window.innerWidth - .5) * 10; const y = (event.clientY / window.innerHeight - .5) * 10; heroArt.style.transform = `translate(${x}px, ${y}px)`; } });
+document.querySelectorAll('.magnetic').forEach((element) => {
+	element.addEventListener('pointermove', (event) => { if (reduceMotion) return; const box = element.getBoundingClientRect(); element.style.transform = `translate(${(event.clientX - (box.left + box.width / 2)) * .12}px, ${(event.clientY - (box.top + box.height / 2)) * .12}px)`; });
+	element.addEventListener('pointerleave', () => { element.style.transform = ''; });
+});
+
+const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+document.querySelectorAll('.scramble').forEach((link) => {
+	const original = link.textContent;
+	link.addEventListener('mouseenter', () => { let frame = 0; const animate = () => { link.textContent = [...original].map((character, index) => index < frame / 2 ? character : alpha[Math.floor(Math.random() * alpha.length)]).join(''); if (frame++ < original.length * 2) requestAnimationFrame(animate); else link.textContent = original; }; animate(); });
+});
+
+let lastScroll = window.scrollY; let skew = 0;
+function velocitySkew() { const velocity = Math.min(Math.abs(window.scrollY - lastScroll) * .035, 1.2); skew += (velocity - skew) * .16; document.querySelector('#page-content').style.transform = reduceMotion ? '' : `skewY(${skew * (window.scrollY > lastScroll ? -1 : 1)}deg)`; lastScroll = window.scrollY; requestAnimationFrame(velocitySkew); }
+if (!reduceMotion) velocitySkew();
+
+const testimonials = [
+	['Philips Jhonathan', 'Micromass Enterprises', 'I’m Philips from Micromass Enterprises. Digi Nexuz has delivered excellent, professional work, and I highly recommend them.'],
+	['Kasturi Lakshmanan', 'Power of Mind', 'Great work, Santhosh! Your video editing skills are truly impressive. We look forward to working with you consistently.'],
+	['Saranya', 'Covai Designs', 'Excellent work! Your shooting and video editing skills are truly outstanding.'],
+	['Immanuel Manoj', 'Sam Media Events', 'Outstanding work! Your filming and editing skills are truly exceptional.'],
+	['AnbuRaj', 'Iyndhinai Organics', 'Great shooting, excellent editing, and well-written script.']
+];
+let quoteIndex = 0;
+function renderQuote() { const [name, company, text] = testimonials[quoteIndex]; document.querySelector('#quote blockquote').textContent = text; document.querySelector('#quote strong').textContent = name; document.querySelector('#quote small').textContent = company; document.querySelector('#progress-bar').style.width = `${((quoteIndex + 1) / testimonials.length) * 100}%`; }
+document.querySelector('#prev').addEventListener('click', () => { quoteIndex = (quoteIndex - 1 + testimonials.length) % testimonials.length; renderQuote(); });
+document.querySelector('#next').addEventListener('click', () => { quoteIndex = (quoteIndex + 1) % testimonials.length; renderQuote(); });
+renderQuote();
+
+const lightbox = document.querySelector('#lightbox');
+document.querySelectorAll('.studio-grid img, .poster-grid img').forEach((image) => image.addEventListener('click', () => { lightbox.querySelector('img').src = image.src; lightbox.querySelector('img').alt = image.alt; lightbox.showModal(); }));
+lightbox.querySelector('button').addEventListener('click', () => lightbox.close());
+lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
