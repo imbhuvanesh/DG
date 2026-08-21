@@ -1,112 +1,1257 @@
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const nav = document.querySelector('#site-nav');
-const cursor = document.querySelector('.cursor');
+/* =========================================================
+   DIGI NEXUZ
+   BRUTAL INTERACTIVE SYSTEM
+========================================================= */
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+const reduceMotion =
+    window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const nav =
+    document.querySelector(
+        '.brutal-nav'
+    );
+
+
+const cursor =
+    document.getElementById(
+        'cursor'
+    );
+
+
+const content =
+    document.getElementById(
+        'scroll-content'
+    );
+
+
+/* =========================================================
+   PRELOADER
+========================================================= */
 
 function startBootLoader() {
-	const loader = document.querySelector('#boot-loader');
-	const percent = document.querySelector('#boot-percent');
-	const progress = document.querySelector('#boot-progress');
-	const status = document.querySelector('#boot-status');
-	const duration = reduceMotion ? 350 : 1800;
-	const started = performance.now();
-	let finished = false;
-	const finish = () => {
-		if (finished) return;
-		finished = true;
-		percent.textContent = '100%';
-		progress.style.width = '100%';
-		status.textContent = 'READY';
-		loader.classList.add('is-done');
-		document.body.classList.remove('booting');
-	};
-	const tick = (time) => {
-		const value = Math.min((time - started) / duration, 1);
-		const number = Math.round(value * 100);
-		percent.textContent = `${String(number).padStart(3, '0')}%`;
-		progress.style.width = `${number}%`;
-		if (value < 1) requestAnimationFrame(tick);
-		else finish();
-	};
-	requestAnimationFrame(tick);
-	window.setTimeout(finish, duration + 700);
+
+    const loader =
+        document.getElementById(
+            'boot-loader'
+        );
+
+
+    const progress =
+        document.getElementById(
+            'boot-progress'
+        );
+
+
+    if (
+        !loader ||
+        !progress
+    ) {
+
+        document.body.classList.remove(
+            'booting'
+        );
+
+        return;
+
+    }
+
+
+    const duration =
+        reduceMotion
+            ? 300
+            : 1500;
+
+
+    const start =
+        performance.now();
+
+
+    function update(time) {
+
+        const elapsed =
+            time - start;
+
+
+        const percentage =
+            Math.min(
+                elapsed / duration,
+                1
+            );
+
+
+        progress.style.width =
+            `${percentage * 100}%`;
+
+
+        if (
+            percentage < 1
+        ) {
+
+            requestAnimationFrame(
+                update
+            );
+
+        } else {
+
+            setTimeout(
+                () => {
+
+                    loader.classList.add(
+                        'is-done'
+                    );
+
+                    document.body.classList.remove(
+                        'booting'
+                    );
+
+                },
+                250
+            );
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        update
+    );
+
 }
+
+
 startBootLoader();
 
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+const mobileButton =
+    document.getElementById(
+        'mobile-menu-button'
+    );
+
+
+const mobileMenu =
+    document.getElementById(
+        'mobile-menu'
+    );
+
+
+if (
+    mobileButton &&
+    mobileMenu
+) {
+
+    mobileButton.addEventListener(
+        'click',
+        () => {
+
+            const isOpen =
+                mobileMenu.classList.contains(
+                    'open'
+                );
+
+
+            mobileMenu.classList.toggle(
+                'open',
+                !isOpen
+            );
+
+
+            mobileButton.setAttribute(
+                'aria-expanded',
+                String(!isOpen)
+            );
+
+
+            mobileButton.querySelector(
+                'span'
+            ).textContent =
+                isOpen
+                    ? '+'
+                    : '×';
+
+        }
+    );
+
+
+    mobileMenu
+        .querySelectorAll('a')
+        .forEach(
+            link => {
+
+                link.addEventListener(
+                    'click',
+                    () => {
+
+                        mobileMenu.classList.remove(
+                            'open'
+                        );
+
+
+                        mobileButton.setAttribute(
+                            'aria-expanded',
+                            'false'
+                        );
+
+
+                        mobileButton.querySelector(
+                            'span'
+                        ).textContent =
+                            '+';
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
 function updateClock() {
-	const now = new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
-	document.querySelector('#clock').textContent = now;
+
+    const clock =
+        document.getElementById(
+            'clock'
+        );
+
+
+    if (!clock) {
+        return;
+    }
+
+
+    clock.textContent =
+        new Date().toLocaleTimeString(
+            'en-IN',
+            {
+                timeZone:
+                    'Asia/Kolkata',
+
+                hour12:
+                    false
+            }
+        );
+
 }
+
+
 updateClock();
-setInterval(updateClock, 1000);
 
-const revealObserver = new IntersectionObserver((entries) => {
-	entries.forEach((entry) => {
-		if (entry.isIntersecting) {
-			entry.target.classList.add('visible');
-			revealObserver.unobserve(entry.target);
-		}
-	});
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
 
-document.querySelectorAll('.hero-title .word').forEach((word) => {
-	const text = word.dataset.word;
-	word.textContent = '';
-	[...text].forEach((character, index) => {
-		const span = document.createElement('span');
-		span.textContent = character;
-		span.style.display = 'inline-block';
-		span.style.opacity = reduceMotion ? '1' : '0';
-		span.style.transform = reduceMotion ? 'none' : 'translateY(80px)';
-		span.style.filter = reduceMotion ? 'none' : 'blur(10px)';
-		span.style.transition = `opacity .7s ${index * .06}s, transform .7s ${index * .06}s, filter .7s ${index * .06}s, color .25s`;
-		word.append(span);
-		requestAnimationFrame(() => { span.style.opacity = '1'; span.style.transform = 'none'; span.style.filter = 'none'; });
-	});
-});
+setInterval(
+    updateClock,
+    1000
+);
 
-window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 80), { passive: true });
 
-if (!reduceMotion && cursor) {
-	let cursorX = innerWidth / 2; let cursorY = innerHeight / 2; let targetX = cursorX; let targetY = cursorY;
-	window.addEventListener('pointermove', (event) => { targetX = event.clientX; targetY = event.clientY; });
-	const moveCursor = () => { cursorX += (targetX - cursorX) * .2; cursorY += (targetY - cursorY) * .2; cursor.style.left = `${cursorX}px`; cursor.style.top = `${cursorY}px`; requestAnimationFrame(moveCursor); };
-	moveCursor();
-	document.querySelectorAll('a, button, .work img, .studio-grid img, .poster-grid img').forEach((element) => {
-		element.addEventListener('mouseenter', () => cursor.classList.add('active'));
-		element.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-	});
+/* =========================================================
+   HERO LETTER SPLIT
+========================================================= */
+
+const words =
+    document.querySelectorAll(
+        '.hero h1 .word'
+    );
+
+
+words.forEach(
+    word => {
+
+        const text =
+            word.dataset.word ||
+            word.innerText;
+
+
+        word.innerHTML =
+            '';
+
+
+        text.split('').forEach(
+            char => {
+
+                const span =
+                    document.createElement(
+                        'span'
+                    );
+
+
+                span.classList.add(
+                    'char'
+                );
+
+
+                span.innerText =
+                    char;
+
+
+                word.appendChild(
+                    span
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   MAGNETIC CURSOR
+========================================================= */
+
+let mouseX =
+    window.innerWidth / 2;
+
+
+let mouseY =
+    window.innerHeight / 2;
+
+
+let cursorX =
+    mouseX;
+
+
+let cursorY =
+    mouseY;
+
+
+window.addEventListener(
+    'mousemove',
+    event => {
+
+        mouseX =
+            event.clientX;
+
+        mouseY =
+            event.clientY;
+
+    }
+);
+
+
+function lerp(
+    start,
+    end,
+    factor
+) {
+
+    return (
+        start +
+        (
+            end -
+            start
+        ) *
+        factor
+    );
+
 }
 
-document.querySelectorAll('.magnetic').forEach((element) => {
-	element.addEventListener('pointermove', (event) => { if (reduceMotion) return; const box = element.getBoundingClientRect(); element.style.transform = `translate(${(event.clientX - (box.left + box.width / 2)) * .12}px, ${(event.clientY - (box.top + box.height / 2)) * .12}px)`; });
-	element.addEventListener('pointerleave', () => { element.style.transform = ''; });
-});
 
-const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-document.querySelectorAll('.scramble').forEach((link) => {
-	const original = link.textContent;
-	link.addEventListener('mouseenter', () => { let frame = 0; const animate = () => { link.textContent = [...original].map((character, index) => index < frame / 2 ? character : alpha[Math.floor(Math.random() * alpha.length)]).join(''); if (frame++ < original.length * 2) requestAnimationFrame(animate); else link.textContent = original; }; animate(); });
-});
+function animateCursor() {
 
-let lastScroll = window.scrollY; let skew = 0;
-function velocitySkew() { const velocity = Math.min(Math.abs(window.scrollY - lastScroll) * .035, 1.2); skew += (velocity - skew) * .16; document.querySelector('#page-content').style.transform = reduceMotion ? '' : `skewY(${skew * (window.scrollY > lastScroll ? -1 : 1)}deg)`; lastScroll = window.scrollY; requestAnimationFrame(velocitySkew); }
-if (!reduceMotion) velocitySkew();
+    if (
+        cursor &&
+        !reduceMotion &&
+        window.innerWidth > 700
+    ) {
+
+        cursorX =
+            lerp(
+                cursorX,
+                mouseX,
+                .15
+            );
+
+
+        cursorY =
+            lerp(
+                cursorY,
+                mouseY,
+                .15
+            );
+
+
+        cursor.style.transform =
+            `
+            translate(
+                ${cursorX}px,
+                ${cursorY}px
+            )
+            translate(-50%, -50%)
+            `;
+
+    }
+
+
+    requestAnimationFrame(
+        animateCursor
+    );
+
+}
+
+
+animateCursor();
+
+
+/* =========================================================
+   MAGNETIC ELEMENTS
+========================================================= */
+
+const magneticElements =
+    document.querySelectorAll(
+        '.magnetic'
+    );
+
+
+magneticElements.forEach(
+    element => {
+
+        element.addEventListener(
+            'mousemove',
+            event => {
+
+                if (
+                    reduceMotion ||
+                    window.innerWidth <= 700
+                ) {
+
+                    return;
+
+                }
+
+
+                const rect =
+                    element.getBoundingClientRect();
+
+
+                const centerX =
+                    rect.left +
+                    rect.width / 2;
+
+
+                const centerY =
+                    rect.top +
+                    rect.height / 2;
+
+
+                const strength =
+                    .35;
+
+
+                const moveX =
+                    (
+                        event.clientX -
+                        centerX
+                    ) *
+                    strength;
+
+
+                const moveY =
+                    (
+                        event.clientY -
+                        centerY
+                    ) *
+                    strength;
+
+
+                element.style.transform =
+                    `
+                    translate(
+                        ${moveX}px,
+                        ${moveY}px
+                    )
+                    `;
+
+
+                if (cursor) {
+
+                    cursor.classList.add(
+                        'magnet'
+                    );
+
+                }
+
+            }
+        );
+
+
+        element.addEventListener(
+            'mouseleave',
+            () => {
+
+                element.style.transform =
+                    '';
+
+
+                if (cursor) {
+
+                    cursor.classList.remove(
+                        'magnet'
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   NAVBAR SCROLL STATE
+========================================================= */
+
+let isScrolled =
+    false;
+
+
+window.addEventListener(
+    'scroll',
+    () => {
+
+        if (
+            window.scrollY > 100
+        ) {
+
+            if (!isScrolled) {
+
+                nav.classList.add(
+                    'scrolled'
+                );
+
+                isScrolled =
+                    true;
+
+            }
+
+        } else {
+
+            if (isScrolled) {
+
+                nav.classList.remove(
+                    'scrolled'
+                );
+
+                nav.style.transform =
+                    '';
+
+                isScrolled =
+                    false;
+
+            }
+
+        }
+
+    },
+    {
+        passive:
+            true
+    }
+);
+
+
+/* =========================================================
+   NAVBAR 3D TILT
+========================================================= */
+
+document.addEventListener(
+    'mousemove',
+    event => {
+
+        if (
+            !nav ||
+            !isScrolled ||
+            reduceMotion ||
+            window.innerWidth <= 700
+        ) {
+
+            return;
+
+        }
+
+
+        const centerX =
+            window.innerWidth / 2;
+
+
+        const centerY =
+            100;
+
+
+        const rotateX =
+            (
+                event.clientY -
+                centerY
+            ) *
+            .018;
+
+
+        const rotateY =
+            (
+                event.clientX -
+                centerX
+            ) *
+            .018;
+
+
+        const clamp =
+            (
+                value,
+                min,
+                max
+            ) => {
+
+                return Math.min(
+                    Math.max(
+                        value,
+                        min
+                    ),
+                    max
+                );
+
+            };
+
+
+        const rx =
+            clamp(
+                rotateX,
+                -5,
+                5
+            );
+
+
+        const ry =
+            clamp(
+                rotateY,
+                -5,
+                5
+            );
+
+
+        nav.style.transform =
+            `
+            translateX(-50%)
+            perspective(1000px)
+            rotateX(${-rx}deg)
+            rotateY(${ry}deg)
+            `;
+
+    }
+);
+
+
+/* =========================================================
+   SCROLL VELOCITY / PAGE SKEW
+========================================================= */
+
+let lastScrollTop =
+    window.scrollY;
+
+
+let currentSkew =
+    0;
+
+
+let targetSkew =
+    0;
+
+
+function scrollLoop() {
+
+    if (
+        content &&
+        !reduceMotion
+    ) {
+
+        const scrollTop =
+            window.scrollY;
+
+
+        const velocity =
+            scrollTop -
+            lastScrollTop;
+
+
+        lastScrollTop =
+            scrollTop;
+
+
+        const maxSkew =
+            3.5;
+
+
+        targetSkew =
+            Math.min(
+                Math.max(
+                    velocity * .08,
+                    -maxSkew
+                ),
+                maxSkew
+            );
+
+
+        currentSkew =
+            lerp(
+                currentSkew,
+                targetSkew,
+                .08
+            );
+
+
+        content.style.transform =
+            `
+            skewY(
+                ${currentSkew}deg
+            )
+            `;
+
+
+        targetSkew *=
+            .82;
+
+    }
+
+
+    requestAnimationFrame(
+        scrollLoop
+    );
+
+}
+
+
+scrollLoop();
+
+
+/* =========================================================
+   HERO VELOCITY
+========================================================= */
+
+let heroVelocity =
+    0;
+
+
+let smoothHeroVelocity =
+    0;
+
+
+let lastHeroScroll =
+    window.scrollY;
+
+
+function heroVelocityLoop() {
+
+    if (
+        !reduceMotion &&
+        words.length
+    ) {
+
+        const current =
+            window.scrollY;
+
+
+        const difference =
+            current -
+            lastHeroScroll;
+
+
+        lastHeroScroll =
+            current;
+
+
+        heroVelocity =
+            difference *
+            .45;
+
+
+        heroVelocity =
+            Math.max(
+                -12,
+                Math.min(
+                    12,
+                    heroVelocity
+                )
+            );
+
+
+        smoothHeroVelocity =
+            lerp(
+                smoothHeroVelocity,
+                heroVelocity,
+                .1
+            );
+
+
+        if (words[0]) {
+
+            words[0].style.transform =
+                `
+                translateX(
+                    ${smoothHeroVelocity}px
+                )
+                `;
+
+        }
+
+
+        if (words[1]) {
+
+            words[1].style.transform =
+                `
+                translateX(
+                    ${smoothHeroVelocity * -0.65}px
+                )
+                `;
+
+        }
+
+
+        heroVelocity *=
+            .85;
+
+    }
+
+
+    requestAnimationFrame(
+        heroVelocityLoop
+    );
+
+}
+
+
+heroVelocityLoop();
+
+
+/* =========================================================
+   HACKER TEXT
+========================================================= */
+
+const alpha =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+
+document
+    .querySelectorAll(
+        '[data-text]'
+    )
+    .forEach(
+        link => {
+
+            link.addEventListener(
+                'mouseenter',
+                event => {
+
+                    if (
+                        reduceMotion
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    let iteration =
+                        0;
+
+
+                    const original =
+                        event.currentTarget.dataset.text;
+
+
+                    clearInterval(
+                        event.currentTarget.interval
+                    );
+
+
+                    event.currentTarget.interval =
+                        setInterval(
+                            () => {
+
+                                event.currentTarget.innerText =
+                                    original
+                                        .split('')
+                                        .map(
+                                            (
+                                                character,
+                                                index
+                                            ) => {
+
+                                                if (
+                                                    index <
+                                                    iteration
+                                                ) {
+
+                                                    return character;
+
+                                                }
+
+
+                                                return alpha[
+                                                    Math.floor(
+                                                        Math.random() *
+                                                        alpha.length
+                                                    )
+                                                ];
+
+                                            }
+                                        )
+                                        .join('');
+
+
+                                if (
+                                    iteration >=
+                                    original.length
+                                ) {
+
+                                    clearInterval(
+                                        event.currentTarget.interval
+                                    );
+
+                                }
+
+
+                                iteration +=
+                                    1 / 3;
+
+                            },
+                            30
+                        );
+
+                }
+            );
+
+
+            link.addEventListener(
+                'mouseleave',
+                event => {
+
+                    clearInterval(
+                        event.currentTarget.interval
+                    );
+
+
+                    event.currentTarget.innerText =
+                        event.currentTarget.dataset.text;
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   TESTIMONIALS
+========================================================= */
 
 const testimonials = [
-	['Philips Jhonathan', 'Micromass Enterprises', 'I’m Philips from Micromass Enterprises. Digi Nexuz has delivered excellent, professional work, and I highly recommend them.'],
-	['Kasturi Lakshmanan', 'Power of Mind', 'Great work, Santhosh! Your video editing skills are truly impressive. We look forward to working with you consistently.'],
-	['Saranya', 'Covai Designs', 'Excellent work! Your shooting and video editing skills are truly outstanding.'],
-	['Immanuel Manoj', 'Sam Media Events', 'Outstanding work! Your filming and editing skills are truly exceptional.'],
-	['AnbuRaj', 'Iyndhinai Organics', 'Great shooting, excellent editing, and well-written script.']
+
+    [
+        'Philips Jhonathan',
+        'Micromass Enterprises',
+        'I’m Philips from Micromass Enterprises. Digi Nexuz has delivered excellent, professional work, and I highly recommend them.'
+    ],
+
+    [
+        'Kasturi Lakshmanan',
+        'Power of Mind',
+        'Great work, Santhosh! Your video editing skills are truly impressive. We look forward to working with you consistently.'
+    ],
+
+    [
+        'Saranya',
+        'Covai Designs',
+        'Excellent work! Your shooting and video editing skills are truly outstanding.'
+    ],
+
+    [
+        'Immanuel Manoj',
+        'Sam Media Events',
+        'Outstanding work! Your filming and editing skills are truly exceptional.'
+    ],
+
+    [
+        'AnbuRaj',
+        'Iyndhinai Organics',
+        'Great shooting, excellent editing, and well-written script.'
+    ]
+
 ];
-let quoteIndex = 0;
-function renderQuote() { const [name, company, text] = testimonials[quoteIndex]; document.querySelector('#quote blockquote').textContent = text; document.querySelector('#quote strong').textContent = name; document.querySelector('#quote small').textContent = company; document.querySelector('#progress-bar').style.width = `${((quoteIndex + 1) / testimonials.length) * 100}%`; }
-document.querySelector('#prev').addEventListener('click', () => { quoteIndex = (quoteIndex - 1 + testimonials.length) % testimonials.length; renderQuote(); });
-document.querySelector('#next').addEventListener('click', () => { quoteIndex = (quoteIndex + 1) % testimonials.length; renderQuote(); });
+
+
+let quoteIndex =
+    0;
+
+
+function renderQuote() {
+
+    const quote =
+        document.getElementById(
+            'quote'
+        );
+
+
+    const progress =
+        document.getElementById(
+            'progress-bar'
+        );
+
+
+    if (
+        !quote ||
+        !progress
+    ) {
+
+        return;
+
+    }
+
+
+    const [
+        name,
+        company,
+        text
+    ] =
+        testimonials[
+            quoteIndex
+        ];
+
+
+    quote.querySelector(
+        'blockquote'
+    ).textContent =
+        text;
+
+
+    quote.querySelector(
+        'strong'
+    ).textContent =
+        name;
+
+
+    quote.querySelector(
+        'small'
+    ).textContent =
+        company;
+
+
+    progress.style.width =
+        `
+        ${
+            (
+                (quoteIndex + 1) /
+                testimonials.length
+            ) * 100
+        }%
+        `;
+
+}
+
+
+document
+    .getElementById('prev')
+    ?.addEventListener(
+        'click',
+        () => {
+
+            quoteIndex =
+                (
+                    quoteIndex -
+                    1 +
+                    testimonials.length
+                ) %
+                testimonials.length;
+
+
+            renderQuote();
+
+        }
+    );
+
+
+document
+    .getElementById('next')
+    ?.addEventListener(
+        'click',
+        () => {
+
+            quoteIndex =
+                (
+                    quoteIndex +
+                    1
+                ) %
+                testimonials.length;
+
+
+            renderQuote();
+
+        }
+    );
+
+
 renderQuote();
 
-const lightbox = document.querySelector('#lightbox');
-document.querySelectorAll('.studio-grid img, .poster-grid img').forEach((image) => image.addEventListener('click', () => { lightbox.querySelector('img').src = image.src; lightbox.querySelector('img').alt = image.alt; lightbox.showModal(); }));
-lightbox.querySelector('button').addEventListener('click', () => lightbox.close());
-lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
+
+/* =========================================================
+   IMAGE LIGHTBOX
+========================================================= */
+
+const lightbox =
+    document.getElementById(
+        'lightbox'
+    );
+
+
+const lightboxImage =
+    document.getElementById(
+        'lightbox-image'
+    );
+
+
+const lightboxClose =
+    document.getElementById(
+        'lightbox-close'
+    );
+
+
+document
+    .querySelectorAll(
+        '.studio-grid img, .poster-grid img'
+    )
+    .forEach(
+        image => {
+
+            image.addEventListener(
+                'click',
+                () => {
+
+                    if (
+                        !lightbox ||
+                        !lightboxImage
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    lightboxImage.src =
+                        image.src;
+
+
+                    lightboxImage.alt =
+                        image.alt;
+
+
+                    lightbox.showModal();
+
+                }
+            );
+
+        }
+    );
+
+
+lightboxClose?.addEventListener(
+    'click',
+    () => {
+
+        lightbox.close();
+
+    }
+);
+
+
+lightbox?.addEventListener(
+    'click',
+    event => {
+
+        if (
+            event.target ===
+            lightbox
+        ) {
+
+            lightbox.close();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   BACK TO TOP
+========================================================= */
+
+const backToTop =
+    document.getElementById(
+        'back-to-top'
+    );
+
+
+window.addEventListener(
+    'scroll',
+    () => {
+
+        if (
+            window.scrollY > 600
+        ) {
+
+            backToTop.classList.add(
+                'show'
+            );
+
+        } else {
+
+            backToTop.classList.remove(
+                'show'
+            );
+
+        }
+
+    },
+    {
+        passive:
+            true
+    }
+);
+
+
+backToTop?.addEventListener(
+    'click',
+    () => {
+
+        window.scrollTo({
+
+            top:
+                0,
+
+            behavior:
+                reduceMotion
+                    ? 'auto'
+                    : 'smooth'
+
+        });
+
+    }
+);
