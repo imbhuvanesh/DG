@@ -1115,6 +1115,96 @@ renderQuote();
 
 
 /* =========================================================
+   MEDIA CAROUSELS
+========================================================= */
+
+document
+    .querySelectorAll('.asset-carousel')
+    .forEach(
+        carousel => {
+
+            const slides =
+                Array.from(
+                    carousel.children
+                );
+
+            if (
+                slides.length < 2
+            ) {
+
+                return;
+
+            }
+
+            let activeIndex =
+                slides.findIndex(
+                    slide => slide.classList.contains('is-active')
+                );
+
+            if (
+                activeIndex < 0
+            ) {
+
+                activeIndex = 0;
+                slides[0].classList.add('is-active');
+
+            }
+
+            const isVideoCarousel =
+                carousel.dataset.carousel === 'slide';
+
+            window.setInterval(
+                () => {
+
+                    const currentSlide =
+                        slides[activeIndex];
+
+                    activeIndex =
+                        (activeIndex + 1) % slides.length;
+
+                    const nextSlide =
+                        slides[activeIndex];
+
+                    if (
+                        isVideoCarousel
+                    ) {
+
+                        currentSlide.classList.remove('is-active');
+                        currentSlide.classList.add('is-exiting');
+                        nextSlide.classList.add('is-active');
+
+                        if (
+                            typeof nextSlide.play === 'function'
+                        ) {
+
+                            nextSlide.currentTime = 0;
+                            nextSlide.play().catch(() => {});
+
+                        }
+
+                        window.setTimeout(
+                            () => {
+                                currentSlide.classList.remove('is-exiting');
+                            },
+                            900
+                        );
+
+                    } else {
+
+                        currentSlide.classList.remove('is-active');
+                        nextSlide.classList.add('is-active');
+
+                    }
+
+                },
+                Number(carousel.dataset.interval) || 1500
+            );
+
+        }
+    );
+
+
+/* =========================================================
    IMAGE LIGHTBOX
 ========================================================= */
 
@@ -1138,7 +1228,7 @@ const lightboxClose =
 
 document
     .querySelectorAll(
-        '.studio-grid img, .poster-grid img'
+        '.studio-carousel img, .poster-carousel img'
     )
     .forEach(
         image => {
