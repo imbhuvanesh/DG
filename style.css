@@ -4059,6 +4059,8 @@ body,
 }
 
 .poster-carousel {
+    width: min(100%, 420px);
+    margin-inline: auto;
     aspect-ratio: 2 / 3;
 }
 
@@ -4107,6 +4109,10 @@ body,
 @media (max-width: 700px) {
     .asset-carousel {
         border-radius: 14px;
+    }
+
+    .video-carousel {
+        aspect-ratio: 4 / 5;
     }
 }
 
